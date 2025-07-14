@@ -1,5 +1,6 @@
-##--- Engine ---##
+##--- RayEngine ---##
 
+cmake_minimum_required(VERSION 3.20)
 project(RayEngine LANGUAGES CXX)
 
 # Defines
@@ -15,7 +16,7 @@ file(GLOB_RECURSE ENGINE_SOURCES
 )
 
 # Build RayEngine as a shared library (.dll)
-add_library(${PROJECT_NAME} SHARED 
+add_library(${PROJECT_NAME} SHARED
     ${ENGINE_SOURCES}
 )
 
@@ -32,4 +33,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PUBLIC
     raylib
+)
+
+target_compile_features(${PROJECT_NAME} PUBLIC 
+    cxx_std_17
 )

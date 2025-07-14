@@ -1,5 +1,6 @@
 ##--- Editor ---##
 
+cmake_minimum_required(VERSION 3.20)
 project(RayForge LANGUAGES CXX)
 
 # Editor source files
@@ -23,6 +24,8 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # Link the engine to the game
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE
     RayEngine
 )
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

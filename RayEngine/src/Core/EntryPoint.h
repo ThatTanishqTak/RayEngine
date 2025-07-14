@@ -1,10 +1,19 @@
 #pragma once
 
-#include <iostream>
+#include <raylib.h>
 
 int main()
 {
-	std::cin.get();
-	
+	InitWindow(800, 600, "RayEngine");
+	SetTargetFPS(60);
+
+	while (!WindowShouldClose())
+	{
+		BeginDrawing();
+		ClearBackground(BLACK);
+		EndDrawing();
+	}
+
+	CloseWindow();
 	return 0;
 }
