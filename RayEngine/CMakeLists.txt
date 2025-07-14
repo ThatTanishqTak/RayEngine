@@ -1,28 +1,35 @@
-##--- Editor ---##
+##--- Engine ---##
 
-project(RayForge LANGUAGES CXX)
+project(RayEngine LANGUAGES CXX)
 
-# Editor source files
-file(GLOB_RECURSE EDITOR_SOURCES
+# Defines
+
+# Third-Party libraries
+# Raylib dependency
+add_subdirectory(vendor/raylib)
+
+# Engine source files
+file(GLOB_RECURSE ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
 )
 
-# Build .exe
-add_executable(${PROJECT_NAME} ${EDITOR_SOURCES})
-
-# Turn the console window off in release build
-target_link_options(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>
-    $<$<CONFIG:Release>:/ENTRY:mainCRTStartup>
+# Build RayEngine as a shared library (.dll)
+add_library(${PROJECT_NAME} SHARED 
+    ${ENGINE_SOURCES}
 )
 
-# Inlcude directory of the engine
-target_include_directories(${PROJECT_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/RayEngine/src
+# Include directory
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
-# Link the engine to the game
-target_link_libraries(${PROJECT_NAME} PRIVATE 
-    RayEngine
+# Set pre compiled header
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/raypch.h
+)
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    raylib
 )
