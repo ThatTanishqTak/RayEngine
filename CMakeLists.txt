@@ -1,27 +1,22 @@
 ﻿##--- Workspace ---##
 
-cmake_minimum_required(VERSION  3.20)
-project(Workspace LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.20)
+project(RayEngineWorkspace LANGUAGES CXX)
 
-# Set workspace-wide standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add compiler options
 if(MSVC)
-	add_compile_options(/MP)
-	add_compile_options(/utf-8)
+    add_compile_options(/MP /utf-8)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	set(ARCH "x64")
+    set(ARCH "x64")
 else()
-	set(ARCH "x86")
+    set(ARCH "x86")
 endif()
 
-# Create custom output directory
-set(OUTPUT_DIR "${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${ARCH}/${PROJECT_NAME}")
+set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/bin/${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${ARCH}/${PROJECT_NAME})
 
-# Add engine and editor subdirectory
 add_subdirectory(RayEngine)
 add_subdirectory(RayForge)

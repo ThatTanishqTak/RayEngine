@@ -4,7 +4,7 @@
 
 int main()
 {
-	InitWindow(800, 600, "RayEngine");
+	InitWindow(1920, 1080, "RayEngine");
 	SetTargetFPS(60);
 
 	while (!WindowShouldClose())

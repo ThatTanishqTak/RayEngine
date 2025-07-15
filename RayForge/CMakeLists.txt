@@ -1,33 +1,32 @@
-##--- Editor ---##
+##--- RayForge ---##
 
+cmake_minimum_required(VERSION 3.20)
 project(RayForge LANGUAGES CXX)
 
-# Editor source files
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 file(GLOB_RECURSE EDITOR_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
 )
 
-# Build .exe
 add_executable(${PROJECT_NAME} ${EDITOR_SOURCES})
 
-# Place the output DLL and import library next to the executable
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
-# Turn the console window off in release build
 target_link_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>
     $<$<CONFIG:Release>:/ENTRY:mainCRTStartup>
 )
 
-# Inlcude directory of the engine
-target_include_directories(${PROJECT_NAME} PRIVATE 
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/RayEngine/src
 )
 
-# Link the engine to the game
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     RayEngine
 )
