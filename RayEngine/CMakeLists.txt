@@ -1,19 +1,15 @@
 ##--- RayEngine ---##
 
-cmake_minimum_required(VERSION 3.20)
 project(RayEngine LANGUAGES CXX)
+
 
 # Defines
 
 # Third-Party libraries
 # Raylib dependency
-set(RAYLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/raylib" CACHE PATH "Path to prebuilt raylib")
-
-# Imported raylib library
-add_library(raylib STATIC IMPORTED GLOBAL)
-set_target_properties(raylib PROPERTIES
-    IMPORTED_LOCATION "${RAYLIB_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}raylib${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    INTERFACE_INCLUDE_DIRECTORIES "${RAYLIB_ROOT}/include"
+add_library(raylib INTERFACE)
+target_include_directories(raylib INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vendor/raylib/include>
 )
 
 # Engine sources
@@ -23,28 +19,29 @@ file(GLOB_RECURSE ENGINE_SOURCES
 )
 
 # Build RayEngine as a shared library (.dll)
-add_library(RayEngine SHARED
+add_library(${PROJECT_NAME} SHARED
     ${ENGINE_SOURCES}
 )
 
-# Include directory
-target_include_directories(RayEngine PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    ${RAYLIB_ROOT}/include
+# Place the output DLL and import library next to the executable
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
-# Library directories
-target_link_directories(RayEngine PUBLIC
-    ${RAYLIB_ROOT}/lib
+# Include directory
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
 # Precompiled header
-target_precompile_headers(RayEngine PRIVATE
+target_precompile_headers(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/raypch.h
 )
 
 # Link libraries
-target_link_libraries(RayEngine PUBLIC
-    raylib
-    winmm.lib
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    raylib.lib
+    $<$<PLATFORM_ID:Windows>:winmm.lib>
 )

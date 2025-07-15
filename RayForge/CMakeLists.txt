@@ -11,6 +11,11 @@ file(GLOB_RECURSE EDITOR_SOURCES
 # Build .exe
 add_executable(${PROJECT_NAME} ${EDITOR_SOURCES})
 
+# Place the output DLL and import library next to the executable
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}
+)
+
 # Turn the console window off in release build
 target_link_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>

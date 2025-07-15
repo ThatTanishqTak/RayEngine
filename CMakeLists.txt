@@ -20,12 +20,7 @@ else()
 endif()
 
 # Create custom output directory
-set(OUTPUT_DIR ${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${ARCH})
-
-# Set custom output directory
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}/${PROJECT_NAME})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}/${PROJECT_NAME})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${OUTPUT_DIR}/${PROJECT_NAME})
+set(OUTPUT_DIR "${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${ARCH}/${PROJECT_NAME}")
 
 # Add engine and editor subdirectory
 add_subdirectory(RayEngine)
