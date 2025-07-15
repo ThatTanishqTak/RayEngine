@@ -1,3 +1,0 @@
-[submodule "RayEngine/vendor/raylib"]
-	path = RayEngine/vendor/raylib
-	url = https://github.com/ThatTanishqTak/raylib.git
