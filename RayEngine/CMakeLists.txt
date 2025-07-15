@@ -7,34 +7,30 @@ project(RayEngine LANGUAGES CXX)
 
 # Third-Party libraries
 # Raylib dependency
-add_subdirectory(vendor/raylib)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/raylib)
 
-# Engine source files
+# Engine sources
 file(GLOB_RECURSE ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
 )
 
 # Build RayEngine as a shared library (.dll)
-add_library(${PROJECT_NAME} SHARED
+add_library(RayEngine SHARED
     ${ENGINE_SOURCES}
 )
 
 # Include directory
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(RayEngine PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
-# Set pre compiled header
-target_precompile_headers(${PROJECT_NAME} PRIVATE
+# Precompiled header
+target_precompile_headers(RayEngine PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/raypch.h
 )
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(RayEngine PUBLIC
     raylib
-)
-
-target_compile_features(${PROJECT_NAME} PUBLIC 
-    cxx_std_17
 )

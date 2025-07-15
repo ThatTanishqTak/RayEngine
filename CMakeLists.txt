@@ -1,7 +1,7 @@
-##--- Workspace ---##
+﻿##--- Workspace ---##
 
 cmake_minimum_required(VERSION  3.20)
-project(RayEngine LANGUAGES CXX)
+project(Workspace LANGUAGES CXX)
 
 # Set workspace-wide standard
 set(CMAKE_CXX_STANDARD 17)
