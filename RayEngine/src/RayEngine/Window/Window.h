@@ -2,30 +2,41 @@
 
 namespace RayEngine
 {
-	struct WindowSpecification
-	{
-		const char* Title;
+    struct WindowSpecification
+    {
+        const char* Title;
 
-		int Width;
-		int Height;
-	};
+        int Width;
+        int Height;
+        bool VSync = false;
+    };
 
-	class Window
-	{
-	public:
-		Window() = default;
-		Window(const WindowSpecification& specification);
-		~Window() = default;
+    class Window
+    {
+    public:
+        Window() = default;
+        Window(const WindowSpecification& specification);
+        ~Window();
 
-		bool Initialize();
-		void Shutdown();
+        bool Initialize();
+        void Shutdown();
 
-		bool ShouldClose() const;
-		void PollEvents();
+        void SetVSync(bool enabled);
+        bool IsVSync() const { return m_Specification.VSync; }
 
-	private:
-		WindowSpecification m_Specification{};
-		
-		void* m_Window = nullptr;
-	};
+        void SetTitle(const char* title);
+
+        int GetWidth() const { return m_Specification.Width; }
+        int GetHeight() const { return m_Specification.Height; }
+
+        void* GetNativeWindow() const { return m_Window; }
+
+        bool ShouldClose() const;
+        void PollEvents();
+
+    private:
+        WindowSpecification m_Specification{};
+
+        void* m_Window = nullptr;
+    };
 }

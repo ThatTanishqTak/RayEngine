@@ -8,20 +8,27 @@ namespace RayEngine
 {
 	Window::Window(const WindowSpecification& specification) : m_Specification(specification)
 	{
+	}
 
+	Window::~Window()
+	{
+		Shutdown();
 	}
 
 	bool Window::Initialize()
 	{
 		InitWindow(m_Specification.Width, m_Specification.Height, m_Specification.Title);
 		SetTargetFPS(60);
+		SetWindowState(FLAG_WINDOW_RESIZABLE);
+		SetVSync(m_Specification.VSync);
 
 		return true;
 	}
 
 	void Window::Shutdown()
 	{
-		CloseWindow();
+		if (IsWindowReady())
+			CloseWindow();
 	}
 
 	bool Window::ShouldClose() const
@@ -31,6 +38,21 @@ namespace RayEngine
 
 	void Window::PollEvents()
 	{
+		PollInputEvents();
+	}
 
+	void Window::SetVSync(bool enabled)
+	{
+		m_Specification.VSync = enabled;
+		if (enabled)
+			SetTargetFPS(60);
+		else
+			SetTargetFPS(0);
+	}
+
+	void Window::SetTitle(const char* title)
+	{
+		m_Specification.Title = title;
+		SetWindowTitle(title);
 	}
 }

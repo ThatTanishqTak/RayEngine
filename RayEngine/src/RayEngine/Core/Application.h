@@ -18,6 +18,7 @@ namespace RayEngine
         const char* Name = "RayEngine-Application";
         int Width = 800;
         int Height = 600;
+        bool VSync = false;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 

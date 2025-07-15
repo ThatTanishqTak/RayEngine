@@ -22,6 +22,7 @@ namespace RayEngine
 		specs.Width = 1920;
 		specs.Height = 1080;
 		specs.CommandLineArgs = args;
+		specs.VSync = true;
 
 		return new RayForge(specs);
 	}

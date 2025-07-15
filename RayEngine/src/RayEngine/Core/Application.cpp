@@ -6,7 +6,7 @@ namespace RayEngine
 {
 	Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
 	{
-		m_Window = std::make_unique<Window>(WindowSpecification{ m_Specification.Name, m_Specification.Width, m_Specification.Height });
+		m_Window = std::make_unique<Window>(WindowSpecification{ m_Specification.Name, m_Specification.Width, m_Specification.Height, m_Specification.VSync });
 		if (!m_Window->Initialize())
 		{
 			std::cout << "Window's fucked";
