@@ -2,7 +2,6 @@
 
 #include "RayEngine/Window/Window.h"
 
-#include <raylib.h>
 
 namespace RayEngine
 {

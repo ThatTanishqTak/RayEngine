@@ -2,8 +2,6 @@
 
 #include "RayEngine/Renderer/Renderer.h"
 
-#include <raylib.h>
-
 namespace RayEngine
 {
 	bool Renderer::Initialize()

@@ -6,10 +6,10 @@ project(RayEngineWorkspace LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_definitions(
-    WIN32_LEAN_AND_MEAN
+add_compile_definitions(WIN32_LEAN_AND_MEAN
     NOMINMAX
     NOGDI
+    _WIN32
 )
 
 # MSVC specific compiler options

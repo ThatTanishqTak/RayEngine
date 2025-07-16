@@ -3,7 +3,6 @@
 #include "RayEngine/Window/Window.h"
 #include "RayEngine/Renderer/Renderer.h"
 
-#include <raylib.h>
 #include <memory>
 
 namespace RayEngine

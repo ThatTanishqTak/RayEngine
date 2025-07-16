@@ -12,6 +12,17 @@
 #define NOGDI
 #endif
 
+#ifdef _WIN32
+#include <Windows.h>
+#undef CloseWindow
+#undef ShowCursor
+#undef LoadImageA
+#undef DrawTextA
+#undef DrawTextExA
+#endif
+
+#include <raylib.h>
+
 #include <iostream>
 #include <memory>
 #include <utility>
