@@ -16,7 +16,7 @@ namespace RayEngine
     public:
         Window() = default;
         Window(const WindowSpecification& specification);
-        ~Window();
+        ~Window() = default;
 
         bool Initialize();
         void Shutdown();

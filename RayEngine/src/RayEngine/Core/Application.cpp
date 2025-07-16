@@ -11,6 +11,12 @@ namespace RayEngine
 		{
 			std::cout << "Window's fucked";
 		}
+
+		m_Renderer = std::make_unique<Renderer>();
+		if (!m_Renderer)
+		{
+			std::cout << "Renderer's fucked";
+		}
 	}
 
 	Application::~Application()

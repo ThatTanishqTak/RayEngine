@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RayEngine/Window/Window.h"
+#include "RayEngine/Renderer/Renderer.h"
 
 #include <raylib.h>
 #include <memory>
@@ -35,12 +36,11 @@ namespace RayEngine
             {
                 m_Window->PollEvents();
 
-                BeginDrawing();
-                //BeginMode3D();
-                ClearBackground(BLACK);
-
-                //EndMode3D();
-                EndDrawing();
+                if (m_Renderer)
+                {
+                    m_Renderer->BeginFrame();
+                    m_Renderer->EndFrame();
+                }
             }
         }
 
@@ -48,5 +48,6 @@ namespace RayEngine
         ApplicationSpecification m_Specification;
 
         std::unique_ptr<Window> m_Window;
+        std::unique_ptr<Renderer> m_Renderer;
     };
 }
