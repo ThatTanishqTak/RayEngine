@@ -1,5 +1,6 @@
 #pragma once
 
+// Core header for the Application class controlling window and rendering.
 #include "RayEngine/Window/EngineWindow.h"
 #include "RayEngine/Renderer/Renderer.h"
 
@@ -7,12 +8,14 @@
 
 namespace RayEngine
 {
+    // Encapsulates raw command line arguments.
     struct ApplicationCommandLineArgs
     {
         int Count = 0;
         char** Args = nullptr;
     };
 
+    // Holds settings required to create an application instance.
     struct ApplicationSpecification
     {
         const char* Name = "RayEngine-Application";
@@ -22,29 +25,19 @@ namespace RayEngine
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
+    // Main application entry point.
     class Application
     {
     public:
         Application() = default;
-        Application(const ApplicationSpecification& specification);
+        explicit Application(const ApplicationSpecification& specification);
         virtual ~Application();
 
-        virtual void Run()
-        {
-            while (!m_Window->ShouldClose())
-            {
-                m_Window->PollEvents();
-
-                if (m_Renderer)
-                {
-                    m_Renderer->BeginFrame();
-                    m_Renderer->EndFrame();
-                }
-            }
-        }
+        // Starts the application loop.
+        void Run();
 
     protected:
-        ApplicationSpecification m_Specification;
+        ApplicationSpecification m_Specification{};
 
         std::unique_ptr<EngineWindow> m_Window;
         std::unique_ptr<Renderer> m_Renderer;

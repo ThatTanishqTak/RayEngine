@@ -1,25 +1,7 @@
 #pragma once
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
-#ifndef NOGDI
-#define NOGDI
-#endif
-
-#ifdef _WIN32
-#include <Windows.h>
-#undef CloseWindow
-#undef ShowCursor
-#undef LoadImageA
-#undef DrawTextA
-#undef DrawTextExA
-#endif
+// raylib must be included before any platform headers to avoid symbol conflicts
+#include <raylib.h>
 
 #include <iostream>
 #include <memory>
@@ -35,3 +17,5 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "RayEngine/Utilities/Utilities.h"

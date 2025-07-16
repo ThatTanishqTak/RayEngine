@@ -3,20 +3,22 @@
 #include "RayEngine/Utilities/Utilities.h"
 #include "RayEngine/Core/Application.h"
 
+// Engine entry point hooking into client application.
 namespace RayEngine
 {
-	Application* CreateApplication(ApplicationCommandLineArgs args);
+    Application* CreateApplication(ApplicationCommandLineArgs args);
 }
 
 int main(int args, char** argv)
 {
-	RayEngine::Utilities::Log::Init();
+    // Initialize logging and create the application instance.
+    RayEngine::Utilities::Log::Init();
 
-	auto app = RayEngine::CreateApplication({ args, argv });
+    auto app = RayEngine::CreateApplication({ args, argv });
 
-	app->Run();
+    app->Run();
 
-	delete app;
+    delete app;
 
-	return 0;
+    return 0;
 }

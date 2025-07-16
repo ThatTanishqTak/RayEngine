@@ -1,5 +1,4 @@
 #include "raypch.h"
-
 #include "RayEngine/Utilities/Utilities.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>

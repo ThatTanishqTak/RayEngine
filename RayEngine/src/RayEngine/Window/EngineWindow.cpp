@@ -1,7 +1,5 @@
 #include "raypch.h"
-
 #include "RayEngine/Window/EngineWindow.h"
-
 
 namespace RayEngine
 {
