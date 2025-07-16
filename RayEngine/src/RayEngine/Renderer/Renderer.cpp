@@ -1,6 +1,7 @@
 #include "raypch.h"
 
 #include "RayEngine/Renderer/Renderer.h"
+#include <raylib.h>
 
 namespace RayEngine
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RayEngine/Window/Window.h"
+#include "RayEngine/Window/EngineWindow.h"
 #include "RayEngine/Renderer/Renderer.h"
 
 #include <memory>
@@ -46,7 +46,7 @@ namespace RayEngine
     protected:
         ApplicationSpecification m_Specification;
 
-        std::unique_ptr<Window> m_Window;
+        std::unique_ptr<EngineWindow> m_Window;
         std::unique_ptr<Renderer> m_Renderer;
     };
 }

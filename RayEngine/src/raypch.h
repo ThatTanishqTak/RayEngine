@@ -21,8 +21,6 @@
 #undef DrawTextExA
 #endif
 
-#include <raylib.h>
-
 #include <iostream>
 #include <memory>
 #include <utility>
