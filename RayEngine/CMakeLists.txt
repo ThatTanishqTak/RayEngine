@@ -6,6 +6,7 @@ project(RayEngine LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Third-Party libraries
 # Raylib dependency
 set(RAYLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/raylib" CACHE PATH "Path to prebuilt raylib")
 
@@ -19,15 +20,24 @@ set_target_properties(raylib PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${RAYLIB_ROOT}/include"
 )
 
+# spdlog
+add_library(spdlog INTERFACE)
+target_include_directories(spdlog INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include>
+)
+
+# Collect engine source files
 file(GLOB_RECURSE ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
 )
 
+# Build the .dll
 add_library(${PROJECT_NAME} SHARED 
     ${ENGINE_SOURCES}
 )
 
+# Set the custom output directory
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
     CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
@@ -41,10 +51,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${RAYLIB_ROOT}/include  # Propagate raylib includes
 )
 
-# Link against raylib
+# Link libraries
 target_link_libraries(${PROJECT_NAME} PUBLIC
     raylib
     winmm.lib
+    spdlog
 )
 
 # Set precompiled header

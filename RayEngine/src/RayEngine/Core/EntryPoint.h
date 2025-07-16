@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RayEngine/Utilities/Utilities.h"
 #include "RayEngine/Core/Application.h"
 
 namespace RayEngine
@@ -9,6 +10,8 @@ namespace RayEngine
 
 int main(int args, char** argv)
 {
+	RayEngine::Utilities::Log::Init();
+
 	auto app = RayEngine::CreateApplication({ args, argv });
 
 	app->Run();

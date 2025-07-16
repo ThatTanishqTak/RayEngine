@@ -20,9 +20,12 @@ namespace RayEngine
 		m_Window = GetWindowHandle();
 
 		if (!IsWindowReady())
+		{
 			return false;
+		}
 
 		SetTargetFPS(60);
+		
 		return true;
 	}
 
