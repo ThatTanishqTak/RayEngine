@@ -44,15 +44,15 @@ namespace RayEngine
 //}
 
 // Core log macros
-#define RAY_CORE_TRACE(...)    ::Trinity::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define RAY_CORE_INFO(...)     ::Trinity::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define RAY_CORE_WARN(...)     ::Trinity::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define RAY_CORE_ERROR(...)    ::Trinity::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define RAY_CORE_CRITICAL(...) ::Trinity::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#define RAY_CORE_TRACE(...)    ::RayEngine::Utilities::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define RAY_CORE_INFO(...)     ::RayEngine::Utilities::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define RAY_CORE_WARN(...)     ::RayEngine::Utilities::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define RAY_CORE_ERROR(...)    ::RayEngine::Utilities::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define RAY_CORE_CRITICAL(...) ::RayEngine::Utilities::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
-#define RAY_TRACE(...)         ::Trinity::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define RAY_INFO(...)          ::Trinity::Log::GetClientLogger()->info(__VA_ARGS__)
-#define RAY_WARN(...)          ::Trinity::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define RAY_ERROR(...)         ::Trinity::Log::GetClientLogger()->error(__VA_ARGS__)
-#define RAY_CRITICAL(...)      ::Trinity::Log::GetClientLogger()->critical(__VA_ARGS__)
+#define RAY_INFO(...)          ::RayEngine::Utilities::Log::GetClientLogger()->info(__VA_ARGS__)
+#define RAY_TRACE(...)         ::RayEngine::Utilities::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define RAY_WARN(...)          ::RayEngine::Utilities::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define RAY_ERROR(...)         ::RayEngine::Utilities::Log::GetClientLogger()->error(__VA_ARGS__)
+#define RAY_CRITICAL(...)      ::RayEngine::Utilities::Log::GetClientLogger()->critical(__VA_ARGS__)
