@@ -8,6 +8,9 @@ namespace RayEngine
     // Construct application and prepare window and renderer.
     Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
     {
+        // Initialize logging
+        Utilities::Log::Inititialize();
+
         m_Window = std::make_unique<Window>(WindowSpecification{ m_Specification.Name, m_Specification.Width, m_Specification.Height, m_Specification.VSync });
         if (!m_Window->Initialize())
         {
@@ -15,7 +18,7 @@ namespace RayEngine
         }
 
         m_Renderer = std::make_unique<Renderer>();
-        if (!m_Renderer)
+        if (!m_Renderer->Initialize())
         {
             RAY_CORE_ERROR("Failed to create renderer");
         }

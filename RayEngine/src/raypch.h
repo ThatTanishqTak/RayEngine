@@ -1,18 +1,17 @@
 #pragma once
-//
-// raypch.h  -- Precompiled header for RayEngine
-//
-// IMPORTANT: We intentionally do *not* include <windows.h> here to avoid
-// name collisions with raylib global C functions (CloseWindow, ShowCursor, ...).
-// If you ever need Win32 APIs, include <windows.h> *only* in a separate
-// platform-specific .cpp that does NOT include this PCH, or include it
-// before this header in that one .cpp and keep the scope local.
-//
 
-// raylib first (so downstream headers can safely use its types)
-#include <raylib.h>
+// raypch.h: Precompiled header for RayEngine
+// Include stable headers here to speed up compilation across the project.
 
-// ---- C / C++ std library ----
+// NOTE: We intentionally avoid including <windows.h> to prevent name collisions
+// with raylib C API functions (e.g., CloseWindow, ShowCursor). If Win32 APIs
+// are needed, include <windows.h> in a separate platform-specific .cpp file before
+// this header, keeping scope local.
+
+// raylib header must come first so downstream headers can use its types safely
+//#include <raylib.h>  // Core raylib functions for windowing, input, and graphics
+
+// ---- C / C++ Standard Library Headers ----
 #include <cstdint>
 #include <cstddef>
 #include <cstdlib>
@@ -23,7 +22,7 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
-#include <stdexcept>
+#include <stdexcept> 
 
 #include <iostream>
 #include <string>
@@ -33,5 +32,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-// Engine utilities
-#include "RayEngine/Utilities/Utilities.h"
+// Engine utility headers
+#include "RayEngine/Utilities/Utilities.h"  // Logging, helpers, and platform abstractions
+
+// End of raypch.h

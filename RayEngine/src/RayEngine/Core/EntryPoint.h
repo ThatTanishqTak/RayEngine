@@ -11,11 +11,7 @@ namespace RayEngine
 
 int main(int args, char** argv)
 {
-    // Initialize logging and create the application instance.
-    RayEngine::Utilities::Log::Init();
-
     auto app = RayEngine::CreateApplication({ args, argv });
-
     app->Run();
 
     delete app;

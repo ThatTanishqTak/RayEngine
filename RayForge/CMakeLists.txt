@@ -61,5 +61,4 @@ endif()
 
 # For Visual Studio F5 debugging: run from the build/bin/<config> folder
 set_property(TARGET RayForge PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
-  "${RAYFORGE_OUTPUT_BASE}/bin/$<CONFIG>"
-)
+  "${RAYFORGE_OUTPUT_BASE}/bin/$<CONFIG>")

@@ -7,24 +7,43 @@
 
 namespace RayEngine
 {
-	bool Renderer::Initialize()
-	{
-		return true;
-	}
+    bool Renderer::Initialize()
+    {
+        if (!IsWindowReady())
+        {
+            RAY_CORE_ERROR("Renderer initialization failed: window is not ready");
 
-	void Renderer::Shutdown()
-	{
-		
-	}
+            return false;
+        }
 
-	void Renderer::BeginFrame()
-	{
-		BeginDrawing();
-		ClearBackground(BLACK);
-	}
+        SetConfigFlags(FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
 
-	void Renderer::EndFrame()
-	{
-		EndDrawing();
-	}
+        RenderTexture2D checkBuffer = LoadRenderTexture(1, 1);
+        if (checkBuffer.id == 0)
+        {
+            RAY_CORE_ERROR("Failed to create render texture");
+
+            return false;
+        }
+
+        UnloadRenderTexture(checkBuffer);
+
+        return true;
+    }
+
+    void Renderer::Shutdown()
+    {
+
+    }
+
+    void Renderer::BeginFrame()
+    {
+        BeginDrawing();
+        ClearBackground(BLACK);
+    }
+
+    void Renderer::EndFrame()
+    {
+        EndDrawing();
+    }
 }
