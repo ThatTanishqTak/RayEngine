@@ -2,6 +2,7 @@
 
 // Core header for the Application class controlling window and rendering.
 #include "RayEngine/Window/Window.h"
+#include "RayEngine/Renderer/IRenderer.h"
 #include "RayEngine/Renderer/Renderer.h"
 
 #include <memory>
@@ -56,6 +57,6 @@ namespace RayEngine
         ApplicationSpecification m_Specification{};
 
         std::unique_ptr<Window> m_Window;
-        std::unique_ptr<Renderer> m_Renderer;
+        std::unique_ptr<IRenderer> m_Renderer;
     };
 }

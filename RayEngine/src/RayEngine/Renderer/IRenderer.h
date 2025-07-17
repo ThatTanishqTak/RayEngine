@@ -12,5 +12,8 @@ namespace RayEngine
 
         virtual void BeginFrame() = 0;
         virtual void EndFrame() = 0;
+
+        virtual void BeginScene() = 0;
+        virtual void EndScene() = 0;
     };
 }

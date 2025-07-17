@@ -1,13 +1,13 @@
 #include "raypch.h"
 
-#include "RayEngine/Renderer/RaylibRenderer.h"
+#include "RayEngine/Renderer/Renderer.h"
 #include "RayEngine/Utilities/Utilities.h"
 
 #include <raylib.h>
 
 namespace RayEngine
 {
-    bool RaylibRenderer::Initialize()
+    bool Renderer::Initialize()
     {
         if (!IsWindowReady())
         {
@@ -28,22 +28,40 @@ namespace RayEngine
 
         UnloadRenderTexture(checkBuffer);
 
+        m_Camera.position = { 10.0f, 10.0f, 10.0f };
+        m_Camera.target = { 0.0f, 0.0f, 0.0f };
+        m_Camera.up = { 0.0f, 1.0f, 0.0f };
+        m_Camera.fovy = 45.0f;
+        m_Camera.projection = CAMERA_PERSPECTIVE;
+
         return true;
     }
 
-    void RaylibRenderer::Shutdown()
+    void Renderer::Shutdown()
     {
 
     }
 
-    void RaylibRenderer::BeginFrame()
+    void Renderer::BeginFrame()
     {
         BeginDrawing();
         ClearBackground(BLACK);
     }
 
-    void RaylibRenderer::EndFrame()
+    void Renderer::EndFrame()
     {
         EndDrawing();
+    }
+
+    void Renderer::BeginScene()
+    {
+        BeginMode3D(m_Camera);
+    }
+
+    void Renderer::EndScene()
+    {
+        DrawCube({ 0.0f, 0.0f, 0.0f }, 2.0f, 2.0f, 2.0f, RED);
+        DrawCubeWires({ 0.0f, 0.0f, 0.0f }, 2.0f, 2.0f, 2.0f, BLACK);
+        EndMode3D();
     }
 }

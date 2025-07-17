@@ -1,6 +1,7 @@
 #include "raypch.h"
 
 #include "RayEngine/Core/Application.h"
+#include "RayEngine/Renderer/Renderer.h"
 #include "RayEngine/Utilities/Utilities.h"
 
 namespace RayEngine
@@ -17,7 +18,7 @@ namespace RayEngine
             RAY_CORE_ERROR("Failed to initialize window");
         }
 
-        m_Renderer = std::make_unique<RaylibRenderer>();
+        m_Renderer = std::make_unique<Renderer>();
         if (!m_Renderer->Initialize())
         {
             RAY_CORE_ERROR("Failed to create renderer");
@@ -31,7 +32,7 @@ namespace RayEngine
             m_Window->Shutdown();
             m_Window.reset();
         }
-     
+
         if (m_Renderer)
         {
             m_Renderer->Shutdown();
