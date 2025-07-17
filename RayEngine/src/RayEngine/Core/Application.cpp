@@ -17,7 +17,7 @@ namespace RayEngine
             RAY_CORE_ERROR("Failed to initialize window");
         }
 
-        m_Renderer = std::make_unique<Renderer>();
+        m_Renderer = std::make_unique<RaylibRenderer>();
         if (!m_Renderer->Initialize())
         {
             RAY_CORE_ERROR("Failed to create renderer");

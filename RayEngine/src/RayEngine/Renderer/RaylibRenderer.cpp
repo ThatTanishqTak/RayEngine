@@ -1,13 +1,13 @@
 #include "raypch.h"
 
-#include "RayEngine/Renderer/Renderer.h"
+#include "RayEngine/Renderer/RaylibRenderer.h"
 #include "RayEngine/Utilities/Utilities.h"
 
 #include <raylib.h>
 
 namespace RayEngine
 {
-    bool Renderer::Initialize()
+    bool RaylibRenderer::Initialize()
     {
         if (!IsWindowReady())
         {
@@ -31,18 +31,18 @@ namespace RayEngine
         return true;
     }
 
-    void Renderer::Shutdown()
+    void RaylibRenderer::Shutdown()
     {
 
     }
 
-    void Renderer::BeginFrame()
+    void RaylibRenderer::BeginFrame()
     {
         BeginDrawing();
         ClearBackground(BLACK);
     }
 
-    void Renderer::EndFrame()
+    void RaylibRenderer::EndFrame()
     {
         EndDrawing();
     }

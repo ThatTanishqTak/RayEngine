@@ -43,6 +43,10 @@ namespace RayEngine
                 if (m_Renderer)
                 {
                     m_Renderer->BeginFrame();
+
+                    m_Renderer->BeginScene();
+                    m_Renderer->EndScene();
+
                     m_Renderer->EndFrame();
                 }
             }

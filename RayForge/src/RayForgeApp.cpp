@@ -30,7 +30,4 @@ namespace RayEngine
         // Return a new instance of our custom RayForge application
         return new RayForge(specs);
     }
-
-}  // namespace RayEngine
-
-// End of RayForgeApp.cpp
+}
