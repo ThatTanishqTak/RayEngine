@@ -11,12 +11,12 @@ namespace RayEngine
         bool VSync = false;
     };
 
-    class EngineWindow
+    class Window
     {
     public:
-        EngineWindow() = default;
-        EngineWindow(const WindowSpecification& specification);
-        ~EngineWindow() = default;
+        Window() = default;
+        Window(const WindowSpecification& specification);
+        ~Window() = default;
 
         bool Initialize();
         void Shutdown();

@@ -8,7 +8,7 @@ namespace RayEngine
     // Construct application and prepare window and renderer.
     Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
     {
-        m_Window = std::make_unique<EngineWindow>(WindowSpecification{ m_Specification.Name, m_Specification.Width, m_Specification.Height, m_Specification.VSync });
+        m_Window = std::make_unique<Window>(WindowSpecification{ m_Specification.Name, m_Specification.Width, m_Specification.Height, m_Specification.VSync });
         if (!m_Window->Initialize())
         {
             RAY_CORE_ERROR("Failed to initialize window");
@@ -33,20 +33,6 @@ namespace RayEngine
         {
             m_Renderer->Shutdown();
             m_Renderer.reset();
-        }
-    }
-
-    void Application::Run()
-    {
-        while (!m_Window->ShouldClose())
-        {
-            m_Window->PollEvents();
-
-            if (m_Renderer)
-            {
-                m_Renderer->BeginFrame();
-                m_Renderer->EndFrame();
-            }
         }
     }
 }

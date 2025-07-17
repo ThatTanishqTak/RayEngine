@@ -1,32 +1,38 @@
 #include "raypch.h"
-#include "RayEngine/Window/EngineWindow.h"
+#include "RayEngine/Window/Window.h"
+
+#include <raylib.h>
 
 namespace RayEngine
 {
-	EngineWindow::EngineWindow(const WindowSpecification& specification) : m_Specification(specification)
+	Window::Window(const WindowSpecification& specification) : m_Specification(specification)
 	{
 
 	}
 
-
-	bool EngineWindow::Initialize()
+	bool Window::Initialize()
 	{
 		InitWindow(m_Specification.Width, m_Specification.Height, m_Specification.Title);
 		SetWindowState(FLAG_WINDOW_RESIZABLE);
 		SetVSync(m_Specification.VSync);
+
 		m_Window = GetWindowHandle();
 
 		if (!IsWindowReady())
 		{
+			RAY_CORE_CRITICAL("Window is not ready");
+
 			return false;
 		}
 
 		SetTargetFPS(60);
 
+		RAY_CORE_TRACE("Window Initialized");
+
 		return true;
 	}
 
-	void EngineWindow::Shutdown()
+	void Window::Shutdown()
 	{
 		if (IsWindowReady())
 		{
@@ -34,17 +40,17 @@ namespace RayEngine
 		}
 	}
 
-	bool EngineWindow::ShouldClose() const
+	bool Window::ShouldClose() const
 	{
 		return WindowShouldClose();
 	}
 
-	void EngineWindow::PollEvents()
+	void Window::PollEvents()
 	{
 		PollInputEvents();
 	}
 
-	void EngineWindow::SetVSync(bool enabled)
+	void Window::SetVSync(bool enabled)
 	{
 		m_Specification.VSync = enabled;
 		if (enabled)
@@ -58,7 +64,7 @@ namespace RayEngine
 		}
 	}
 
-	void EngineWindow::SetTitle(const char* title)
+	void Window::SetTitle(const char* title)
 	{
 		m_Specification.Title = title;
 		SetWindowTitle(title);

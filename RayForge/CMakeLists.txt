@@ -1,38 +1,65 @@
-##--- RayForge ---##
-
 cmake_minimum_required(VERSION 3.20)
+
 project(RayForge LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Collect editor source files
-file(GLOB_RECURSE EDITOR_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+# ----------------------------------------------------------------------------
+# Sources
+# ----------------------------------------------------------------------------
+file(GLOB_RECURSE RAYFORGE_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
 )
 
-# Build the executable
-add_executable(${PROJECT_NAME} ${EDITOR_SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" FILES ${RAYFORGE_SOURCES})
 
-# Set custom output directory
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR}
-    WINDOWS_EXPORT_ALL_SYMBOLS ON
+add_executable(RayForge ${RAYFORGE_SOURCES})
+add_executable(RayForge::RayForge ALIAS RayForge)
+
+# Require C++17 (editor code)
+target_compile_features(RayForge PRIVATE cxx_std_17)
+
+# Editor’s own headers (engine headers arrive transitively from link).
+target_include_directories(RayForge
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
 )
 
-# Turn off the console window for release build
-target_link_options(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS>
-    $<$<CONFIG:Release>:/ENTRY:mainCRTStartup>
+# Link to the engine (brings in raylib + spdlog + system libs)
+target_link_libraries(RayForge
+  PRIVATE
+    RayEngine::RayEngine
 )
 
-# Include directory
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/RayEngine/src
+# Hide console window in Release builds on MSVC (GUI app)
+target_link_options(RayForge PRIVATE
+  $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/SUBSYSTEM:WINDOWS>
+  $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/ENTRY:mainCRTStartup>
 )
 
-# Link against the engine
-target_link_libraries(${PROJECT_NAME} PRIVATE 
-    RayEngine
+# ----------------------------------------------------------------------------
+# Output directories (workspace aligned)
+# ----------------------------------------------------------------------------
+set(RAYFORGE_OUTPUT_BASE "${RAY_OUTPUT_BASE}" CACHE PATH "Base output directory for RayForge artifacts")
+set_target_properties(RayForge PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${RAYFORGE_OUTPUT_BASE}/bin"
+  LIBRARY_OUTPUT_DIRECTORY "${RAYFORGE_OUTPUT_BASE}/lib"
+  ARCHIVE_OUTPUT_DIRECTORY "${RAYFORGE_OUTPUT_BASE}/lib"
+)
+if(CMAKE_CONFIGURATION_TYPES)
+  foreach(_cfg IN LISTS CMAKE_CONFIGURATION_TYPES)
+    string(TOUPPER "${_cfg}" _CFG_UC)
+    set_target_properties(RayForge PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY_${_CFG_UC} "${RAYFORGE_OUTPUT_BASE}/bin/${_cfg}"
+      LIBRARY_OUTPUT_DIRECTORY_${_CFG_UC} "${RAYFORGE_OUTPUT_BASE}/lib/${_cfg}"
+      ARCHIVE_OUTPUT_DIRECTORY_${_CFG_UC} "${RAYFORGE_OUTPUT_BASE}/lib/${_cfg}"
+    )
+  endforeach()
+endif()
+
+# For Visual Studio F5 debugging: run from the build/bin/<config> folder
+set_property(TARGET RayForge PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
+  "${RAYFORGE_OUTPUT_BASE}/bin/$<CONFIG>"
 )

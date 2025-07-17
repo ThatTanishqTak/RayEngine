@@ -1,64 +1,171 @@
-##--- RayEngine ---##
+﻿cmake_minimum_required(VERSION 3.20)
 
-cmake_minimum_required(VERSION 3.20)
-project(RayEngine LANGUAGES CXX)
+project(RayEngine VERSION 0.1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# ----------------------------------------------------------------------------
+# Options
+# ----------------------------------------------------------------------------
+option(RAYENGINE_BUILD_SHARED "Build RayEngine as a shared library (DLL)" ON)
+option(RAYENGINE_USE_PRECOMPILED_HEADERS "Enable precompiled headers (raypch.h)" ON)
 
-# Third-Party libraries
-# Raylib dependency
-set(RAYLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/raylib" CACHE PATH "Path to prebuilt raylib")
+# No compiler extensions (/std:c++17 not gnu++17, etc.)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# ----------------------------------------------------------------------------
+# Locate prebuilt raylib
+# ----------------------------------------------------------------------------
+set(RAYLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vendor/raylib"
+    CACHE PATH "Root of prebuilt raylib (must contain include/raylib.h and lib/)")
 
 if(NOT EXISTS "${RAYLIB_ROOT}/include/raylib.h")
-    message(FATAL_ERROR "raylib not found. Set RAYLIB_ROOT to a valid raylib installation")
+  message(FATAL_ERROR "raylib not found at ${RAYLIB_ROOT} (missing include/raylib.h). "
+                      "Set RAYLIB_ROOT in the CMake cache.")
 endif()
 
-add_library(raylib STATIC IMPORTED GLOBAL)
-set_target_properties(raylib PROPERTIES
-    IMPORTED_LOCATION "${RAYLIB_ROOT}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}raylib${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    INTERFACE_INCLUDE_DIRECTORIES "${RAYLIB_ROOT}/include"
+# Architecture subfolder heuristic (x64 vs x86) in common vendor layouts
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(_RAYLIB_ARCH x64)
+else()
+  set(_RAYLIB_ARCH x86)
+endif()
+
+set(_RAYLIB_LIB_HINTS
+  "${RAYLIB_ROOT}/lib"
+  "${RAYLIB_ROOT}/lib/${_RAYLIB_ARCH}"
+  "${RAYLIB_ROOT}/lib/${_RAYLIB_ARCH}/Release"
+  "${RAYLIB_ROOT}/lib/${_RAYLIB_ARCH}/Debug"
+  "${RAYLIB_ROOT}/lib/Release"
+  "${RAYLIB_ROOT}/lib/Debug"
 )
 
-# spdlog
-add_library(spdlog INTERFACE)
-target_include_directories(spdlog INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include>
+# Try to locate Release + Debug variants (fall back Debug->Release if absent)
+find_library(RAYLIB_LIBRARY_RELEASE
+  NAMES raylib raylib_static
+  HINTS ${_RAYLIB_LIB_HINTS}
+  NO_DEFAULT_PATH
+)
+find_library(RAYLIB_LIBRARY_DEBUG
+  NAMES raylibd raylib_debug raylib
+  HINTS ${_RAYLIB_LIB_HINTS}
+  NO_DEFAULT_PATH
 )
 
-# Collect engine source files
-file(GLOB_RECURSE ENGINE_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+if(NOT RAYLIB_LIBRARY_RELEASE)
+  message(FATAL_ERROR "Failed to locate prebuilt raylib library under ${RAYLIB_ROOT}/lib.")
+endif()
+if(NOT RAYLIB_LIBRARY_DEBUG)
+  set(RAYLIB_LIBRARY_DEBUG "${RAYLIB_LIBRARY_RELEASE}")
+endif()
+
+# Imported target (GLOBAL so RayForge sees it)
+add_library(raylib::raylib UNKNOWN IMPORTED GLOBAL)
+set_target_properties(raylib::raylib PROPERTIES
+  IMPORTED_LOCATION_RELEASE "${RAYLIB_LIBRARY_RELEASE}"
+  IMPORTED_LOCATION_DEBUG   "${RAYLIB_LIBRARY_DEBUG}"
+  INTERFACE_INCLUDE_DIRECTORIES "${RAYLIB_ROOT}/include"
+  MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release
+  MAP_IMPORTED_CONFIG_MINSIZEREL   Release
 )
 
-# Build the .dll
-add_library(${PROJECT_NAME} SHARED 
-    ${ENGINE_SOURCES}
+# ----------------------------------------------------------------------------
+# spdlog (header‑only, vendored)
+#   NOTE: cannot create an actual target with name containing '::'; use alias.
+# ----------------------------------------------------------------------------
+add_library(spdlog_header_only INTERFACE)
+add_library(spdlog::spdlog_header_only ALIAS spdlog_header_only)
+target_include_directories(spdlog_header_only INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include>
+  $<INSTALL_INTERFACE:include>
 )
 
-# Set the custom output directory
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR}
-    CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR}
-    WINDOWS_EXPORT_ALL_SYMBOLS ON
+# ----------------------------------------------------------------------------
+# Sources
+#   CONFIGURE_DEPENDS => reconfigure when new source files are added.
+# ----------------------------------------------------------------------------
+file(GLOB_RECURSE RAYENGINE_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
 )
 
+# Optional: print them during configure for debugging (uncomment if needed)
+# message(STATUS "RayEngine source files:")
+# foreach(_src IN LISTS RAYENGINE_SOURCES)
+#   message(STATUS "  ${_src}")
+# endforeach()
 
-# Include directory
-target_include_directories(${PROJECT_NAME} PUBLIC
+# Pretty folder layout in Visual Studio
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" FILES ${RAYENGINE_SOURCES})
+
+# ----------------------------------------------------------------------------
+# Library target
+# ----------------------------------------------------------------------------
+if(RAYENGINE_BUILD_SHARED)
+  add_library(RayEngine SHARED ${RAYENGINE_SOURCES})
+else()
+  add_library(RayEngine STATIC ${RAYENGINE_SOURCES})
+endif()
+add_library(RayEngine::RayEngine ALIAS RayEngine)
+
+# Require C++17 for consumers
+target_compile_features(RayEngine PUBLIC cxx_std_17)
+
+# Publish engine headers
+target_include_directories(RayEngine
+  PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    ${RAYLIB_ROOT}/include  # Propagate raylib includes
+    $<INSTALL_INTERFACE:include>
 )
 
+# ----------------------------------------------------------------------------
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PUBLIC
-    raylib
-    winmm.lib
-    spdlog
+#   Explicit Win32 system libs recommended for static raylib builds.
+#   Remove any you don't need; leaving them is harmless on Windows.
+# ----------------------------------------------------------------------------
+target_link_libraries(RayEngine
+  PUBLIC
+    raylib::raylib
+    spdlog::spdlog_header_only
+    $<$<PLATFORM_ID:Windows>:winmm>
+    $<$<PLATFORM_ID:Windows>:gdi32>
+    $<$<PLATFORM_ID:Windows>:opengl32>
+    $<$<PLATFORM_ID:Windows>:user32>
+    $<$<PLATFORM_ID:Windows>:shell32>
 )
 
-# Set precompiled header
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/raypch.h
+# ----------------------------------------------------------------------------
+# Output directories (integrate with top‑level RAY_OUTPUT_BASE)
+# ----------------------------------------------------------------------------
+set(RAYENGINE_OUTPUT_BASE "${RAY_OUTPUT_BASE}" CACHE PATH "Base output directory for RayEngine artifacts")
+set_target_properties(RayEngine PROPERTIES
+  OUTPUT_NAME "RayEngine"
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+  RUNTIME_OUTPUT_DIRECTORY "${RAYENGINE_OUTPUT_BASE}/bin"
+  LIBRARY_OUTPUT_DIRECTORY "${RAYENGINE_OUTPUT_BASE}/lib"
+  ARCHIVE_OUTPUT_DIRECTORY "${RAYENGINE_OUTPUT_BASE}/lib"
 )
+if(CMAKE_CONFIGURATION_TYPES) # multi‑config (VS, etc.)
+  foreach(_cfg IN LISTS CMAKE_CONFIGURATION_TYPES)
+    string(TOUPPER "${_cfg}" _CFG_UC)
+    set_target_properties(RayEngine PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY_${_CFG_UC} "${RAYENGINE_OUTPUT_BASE}/bin/${_cfg}"
+      LIBRARY_OUTPUT_DIRECTORY_${_CFG_UC} "${RAYENGINE_OUTPUT_BASE}/lib/${_cfg}"
+      ARCHIVE_OUTPUT_DIRECTORY_${_CFG_UC} "${RAYENGINE_OUTPUT_BASE}/lib/${_cfg}"
+    )
+  endforeach()
+endif()
+
+# ----------------------------------------------------------------------------
+# Precompiled header
+# ----------------------------------------------------------------------------
+if(RAYENGINE_USE_PRECOMPILED_HEADERS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/raypch.h")
+  target_precompile_headers(RayEngine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/raypch.h")
+endif()
+
+# ----------------------------------------------------------------------------
+# Diagnostics
+# ----------------------------------------------------------------------------
+message(STATUS "RayEngine: raylib include: ${RAYLIB_ROOT}/include")
+message(STATUS "RayEngine: raylib release: ${RAYLIB_LIBRARY_RELEASE}")
+message(STATUS "RayEngine: raylib debug:   ${RAYLIB_LIBRARY_DEBUG}")

@@ -1,7 +1,7 @@
 #pragma once
 
 // Core header for the Application class controlling window and rendering.
-#include "RayEngine/Window/EngineWindow.h"
+#include "RayEngine/Window/Window.h"
 #include "RayEngine/Renderer/Renderer.h"
 
 #include <memory>
@@ -34,12 +34,24 @@ namespace RayEngine
         virtual ~Application();
 
         // Starts the application loop.
-        void Run();
+        virtual void Run()
+        {
+            while (!m_Window->ShouldClose())
+            {
+                m_Window->PollEvents();
+
+                if (m_Renderer)
+                {
+                    m_Renderer->BeginFrame();
+                    m_Renderer->EndFrame();
+                }
+            }
+        }
 
     protected:
         ApplicationSpecification m_Specification{};
 
-        std::unique_ptr<EngineWindow> m_Window;
+        std::unique_ptr<Window> m_Window;
         std::unique_ptr<Renderer> m_Renderer;
     };
 }

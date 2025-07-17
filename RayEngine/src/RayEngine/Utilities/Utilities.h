@@ -1,47 +1,70 @@
 #pragma once
 
-// This ignores all warnings raised inside External headers
+// -----------------------------------------------------------------------------
+// Local Win32 shim for spdlog
+// -----------------------------------------------------------------------------
+// spdlog's Windows color sink includes <windows.h>, which in turn declares
+// global C functions CloseWindow(), ShowCursor(), LoadImageA/W, DrawTextA/W, ...
+// These clash with raylib's global C API names (CloseWindow(), ShowCursor(), ...).
+//
+// We temporarily macro-rename the Win32 identifiers so the Windows prototypes
+// are parsed under unique names. We immediately undef them after including
+// spdlog so the rest of the codebase isn't polluted.
+//
+// If you ever *need* the real Win32 APIs in code that includes this header,
+// call them via the Windows prefix (::CloseWindow) from a TU that includes
+// <windows.h> directly *before* raylib, or create platform wrappers.
+// -----------------------------------------------------------------------------
+#if defined(_WIN32)
+#define CloseWindow    WIN32API_CloseWindow
+#define ShowCursor     WIN32API_ShowCursor
+#define LoadImage      WIN32API_LoadImage
+#define LoadImageA     WIN32API_LoadImageA
+#define LoadImageW     WIN32API_LoadImageW
+#define DrawText       WIN32API_DrawText
+#define DrawTextA      WIN32API_DrawTextA
+#define DrawTextW      WIN32API_DrawTextW
+#define DrawTextEx     WIN32API_DrawTextEx
+#define DrawTextExA    WIN32API_DrawTextExA
+#define DrawTextExW    WIN32API_DrawTextExW
+#endif
+
+// This ignores all warnings raised inside external headers
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 #pragma warning(pop)
 
+#if defined(_WIN32)
+#undef CloseWindow
+#undef ShowCursor
+#undef LoadImage
+#undef LoadImageA
+#undef LoadImageW
+#undef DrawText
+#undef DrawTextA
+#undef DrawTextW
+#undef DrawTextEx
+#undef DrawTextExA
+#undef DrawTextExW
+#endif
+
 namespace RayEngine
 {
-	namespace Utilities
-	{
-		class Log
-		{
-		public:
-			static void Init();
-
-			static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-			static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
-
-		private:
-			static std::shared_ptr<spdlog::logger> s_CoreLogger;
-			static std::shared_ptr<spdlog::logger> s_ClientLogger;
-		};
-	}
+    namespace Utilities
+    {
+        class Log
+        {
+        public:
+            static void Init();
+            inline static std::shared_ptr<spdlog::logger> GetCoreLogger() { return s_CoreLogger; }
+            inline static std::shared_ptr<spdlog::logger> GetClientLogger() { return s_ClientLogger; }
+        private:
+            static std::shared_ptr<spdlog::logger> s_CoreLogger;
+            static std::shared_ptr<spdlog::logger> s_ClientLogger;
+        };
+    }
 }
-
-//template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
-//inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
-//{
-//	return os << glm::to_string(vector);
-//}
-//
-//template<typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-//inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix)
-//{
-//	return os << glm::to_string(matrix);
-//}
-//
-//template<typename OStream, typename T, glm::qualifier Q>
-//inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
-//{
-//	return os << glm::to_string(quaternion);
-//}
 
 // Core log macros
 #define RAY_CORE_TRACE(...)    ::RayEngine::Utilities::Log::GetCoreLogger()->trace(__VA_ARGS__)
